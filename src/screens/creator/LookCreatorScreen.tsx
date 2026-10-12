@@ -11,6 +11,7 @@ import { Stepper } from '../../components/ui/Stepper'
 import { ACHIEVEMENTS } from '../../data/achievements'
 import { ACCESSORIES, BOTTOMS, OCCASIONS, SHOES, TOPS, findOption } from '../../data/catalog'
 import { useGame } from '../../hooks/useGame'
+import { useSound } from '../../hooks/useSound'
 import { getNewlyUnlockedIds, isAccessoryUnlocked } from '../../lib/achievements'
 import { getHarmony } from '../../lib/colorHarmony'
 import { EMPTY_DRAFT, getUsedPaletteIds, hasAllGarments, isDress, toCompleteLook } from '../../lib/look'
@@ -38,6 +39,7 @@ function toggleAccessory(current: readonly AccessoryId[], id: AccessoryId): Acce
 
 export function LookCreatorScreen() {
   const { state, unlockedAchievementIds, addEntry, navigate } = useGame()
+  const { playEffect } = useSound()
   const [draft, setDraft] = useState<LookDraft>(EMPTY_DRAFT)
   const [stepIndex, setStepIndex] = useState(0)
   const [newAchievementIds, setNewAchievementIds] = useState<readonly AchievementId[]>([])
@@ -79,9 +81,11 @@ export function LookCreatorScreen() {
     const entry = addEntry({ ...values, look })
     const unlockedNow = getNewlyUnlockedIds(state, { ...state, entries: [...state.entries, entry] })
     if (unlockedNow.length === 0) {
+      playEffect('success')
       navigate('diary')
       return
     }
+    playEffect('achievement')
     setNewAchievementIds(unlockedNow)
   }
 

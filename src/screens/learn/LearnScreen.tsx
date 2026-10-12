@@ -6,6 +6,7 @@ import { Card } from '../../components/ui/Card'
 import { ScreenLayout } from '../../components/ui/ScreenLayout'
 import { LESSONS, type Lesson, type LessonId } from '../../data/lessons'
 import { useGame } from '../../hooks/useGame'
+import { useSound } from '../../hooks/useSound'
 import { QuickPractice } from './QuickPractice'
 
 function LessonContent({ lesson }: { lesson: Lesson }) {
@@ -40,7 +41,15 @@ export function LearnScreen() {
   const [activeLessonId, setActiveLessonId] = useState<LessonId>('color')
   const [isPracticing, setIsPracticing] = useState(false)
 
+  const { playEffect } = useSound()
+
   const activeLesson = LESSONS.find((lesson) => lesson.id === activeLessonId)
+
+  const handleQuizComplete = () => {
+    // Solo la primera vez desbloquea el logro "Mente curiosa".
+    playEffect(state.quizCompleted ? 'success' : 'achievement')
+    completeQuiz()
+  }
 
   return (
     <ScreenLayout
@@ -60,7 +69,7 @@ export function LearnScreen() {
       }
     >
       {isPracticing ? (
-        <QuickPractice onComplete={completeQuiz} onExit={() => setIsPracticing(false)} />
+        <QuickPractice onComplete={handleQuizComplete} onExit={() => setIsPracticing(false)} />
       ) : (
         <>
           <div className="tabs" role="tablist" aria-label="Lecciones">

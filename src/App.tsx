@@ -1,6 +1,8 @@
 import type { ComponentType } from 'react'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { SoundControls } from './components/ui/SoundControls'
 import { GameProvider } from './context/GameProvider'
+import { SoundProvider } from './context/SoundProvider'
 import { useGame } from './hooks/useGame'
 import { AchievementsScreen } from './screens/AchievementsScreen'
 import { FarewellScreen } from './screens/FarewellScreen'
@@ -30,9 +32,12 @@ function CurrentScreen() {
 export function App() {
   return (
     <ErrorBoundary>
-      <GameProvider>
-        <CurrentScreen />
-      </GameProvider>
+      <SoundProvider>
+        <GameProvider>
+          <SoundControls />
+          <CurrentScreen />
+        </GameProvider>
+      </SoundProvider>
     </ErrorBoundary>
   )
 }

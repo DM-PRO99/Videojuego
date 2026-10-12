@@ -10,6 +10,7 @@ import { StarRating } from '../../components/ui/StarRating'
 import { REQUIRED_DIARY_ENTRIES } from '../../data/achievements'
 import { ACCESSORIES, EMOTIONS, OCCASIONS, findOption } from '../../data/catalog'
 import { useGame } from '../../hooks/useGame'
+import { useSound } from '../../hooks/useSound'
 import { getHarmony } from '../../lib/colorHarmony'
 import { formatDate } from '../../lib/formatDate'
 import { getUsedPaletteIds } from '../../lib/look'
@@ -52,12 +53,19 @@ function EntryCard({ entry, onOpen }: EntryCardProps) {
 
 export function DiaryScreen() {
   const { state, navigate, deleteEntry, saveReflection } = useGame()
+  const { playEffect } = useSound()
   const [openEntryId, setOpenEntryId] = useState<string | null>(null)
 
   const { entries, finalReflection } = state
   const newestFirst = [...entries].reverse()
   const openEntry = entries.find((entry) => entry.id === openEntryId)
   const missingEntries = REQUIRED_DIARY_ENTRIES - entries.length
+
+  const handleSaveReflection = (authorName: string, text: string) => {
+    // La primera reflexión desbloquea el logro máximo.
+    playEffect(finalReflection ? 'success' : 'achievement')
+    saveReflection(authorName, text)
+  }
 
   const handleDelete = (entryId: string) => {
     deleteEntry(entryId)
@@ -102,7 +110,7 @@ export function DiaryScreen() {
               escribir tu reflexión final. 🌟
             </p>
           ) : (
-            <FinalReflectionForm reflection={finalReflection} onSave={saveReflection} />
+            <FinalReflectionForm reflection={finalReflection} onSave={handleSaveReflection} />
           )}
         </>
       )}
